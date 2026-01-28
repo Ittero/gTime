@@ -1,0 +1,7 @@
+notes.txt
+
+__pycache__/
+
+*.log
+
+stats.json

@@ -1,9 +1,9 @@
-from storage import load_games, init_stats
+from storage import load_games, ensure_stats
 from tracker import GameTracker
 
 def main():
     games = load_games()
-    init_stats(games)
+    ensure_stats(games)
 
     tracker = GameTracker(games)
 

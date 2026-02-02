@@ -17,23 +17,31 @@ def load_games() -> dict:
         return json.load(f)
 
 
-def init_stats(games: dict) -> None:
-    """Створює stats.json, якщо його нема"""
-    stats = {"games": {}}
-    for game_name in games.keys():
-        stats["games"][game_name] = {"total_time": 0, "sessions": []}
+def ensure_stats(games: dict) -> None:
+    # Якщо stats.json не існує або порожній — створюємо
+    if not STATS_FILE.exists() or STATS_FILE.stat().st_size == 0:
+        stats = {"games": {}}
+    else:
+        with open(STATS_FILE, "r", encoding="utf-8") as f:
+            stats = json.load(f)
 
-    with open(STATS_FILE, "w", encoding="utf-8") as f:
-        json.dump(stats, f, indent=2)
+    # Додаємо нові ігри, не чіпаючи старі
+    for game_name in games.keys():
+        if game_name not in stats["games"]:
+            stats["games"][game_name] = {
+                "total_time": 0,
+                "sessions": []
+            }
+
+    save_stats(stats)
+
 
 
 def load_stats(games: dict) -> dict:
-    """Завантажує stats.json, або створює якщо порожній/немає"""
-    if not STATS_FILE.exists() or STATS_FILE.stat().st_size == 0:
-        init_stats(games)
-
+    ensure_stats(games)
     with open(STATS_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
+
 
 
 def save_stats(stats: dict) -> None:

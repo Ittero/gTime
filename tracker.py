@@ -2,6 +2,8 @@ import time
 from datetime import datetime
 import psutil
 from storage import add_session
+from logger import set_current_game, clear_current_game
+
 
 class GameTracker:
     def __init__(self, games: dict):
@@ -13,10 +15,12 @@ class GameTracker:
 
     def _start_session(self, game_name: str):
         self.active_sessions[game_name] = time.time()
+        set_current_game(game_name)
 
     def _end_session(self, game_name: str):
         start_ts = self.active_sessions.pop(game_name)
         end_ts = time.time()
+        clear_current_game()  
         add_session(game_name, start_ts, end_ts, self.games)
 
     def tick(self):
